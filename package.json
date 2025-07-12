@@ -1,5 +1,5 @@
 {
-  "name": "localizacao-backend",
+  "name": "localizacao-em-memoria",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
