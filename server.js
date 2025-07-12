@@ -4,7 +4,14 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+const corsOptions = {
+  origin: "https://h3rcul3s1500.github.io", // ou "*" se quiser liberar para todos
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"]
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 // Armazena as localizações recebidas em memória
