@@ -1,46 +1,40 @@
 const express = require("express");
 const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DB_PATH = path.join(__dirname, "db.json");
 
-app.use(cors()); // ← Habilita CORS
+app.use(cors());
 app.use(express.json());
 
-// Garante que o arquivo db.json exista
-function garantirArquivo() {
-  if (!fs.existsSync(DB_PATH)) {
-    fs.writeFileSync(DB_PATH, '[]');
-  }
-}
+// Armazena as localizações recebidas em memória
+const localizacoes = [];
 
-// Rota principal (teste)
+// Rota para testar se a API está viva
 app.get("/", (req, res) => {
-  res.send("API de localização funcionando.");
+  res.send("API de localização em memória está ativa.");
 });
 
-// Rota POST para salvar localização
+// Recebe localização
 app.post("/api/localizacao", (req, res) => {
-  garantirArquivo(); // Garante que db.json exista
-
   const novaLocalizacao = req.body;
 
-  fs.readFile(DB_PATH, "utf-8", (err, data) => {
-    let db = [];
-    if (!err && data) {
-      try { db = JSON.parse(data); } catch {}
-    }
+  if (!novaLocalizacao || !novaLocalizacao.latitude || !novaLocalizacao.longitude) {
+    return res.status(400).send("Dados inválidos");
+  }
 
-    db.push(novaLocalizacao);
-
-    fs.writeFile(DB_PATH, JSON.stringify(db, null, 2), (err) => {
-      if (err) return res.status(500).send("Erro ao salvar");
-      res.status(200).send("Salvo com sucesso");
-    });
+  localizacoes.push({
+    ...novaLocalizacao,
+    recebidoEm: new Date().toISOString()
   });
+
+  console.log("Localização salva:", novaLocalizacao);
+  res.status(200).send("Localização salva em memória.");
+});
+
+// Rota para visualizar localizações salvas (opcional)
+app.get("/api/localizacoes", (req, res) => {
+  res.json(localizacoes);
 });
 
 app.listen(PORT, () => {
