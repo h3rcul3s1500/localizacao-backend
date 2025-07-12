@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 
@@ -6,6 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_PATH = path.join(__dirname, "db.json");
 
+app.use(cors()); // ← habilita CORS para qualquer origem
 app.use(express.json());
 
 app.post("/api/localizacao", (req, res) => {
